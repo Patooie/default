@@ -1,0 +1,31 @@
+
+
+module.exports = {
+  run: function(creep) {
+    if (creep.memory.working == true && creep.carry.energy == 0){
+      creep.memory.working = false;
+    }
+    else if (creep.memory.working == false && creep.carry.energy == creep.carryCapacity){
+      creep.memory.working = true;
+
+    }
+    if (creep.memory.working == true){
+      // see if this creep is in the right room and if not move to it
+      if (creep.memory.target != creep.room.name && creep.memory.target != ""){
+        var exit = creep.room.findExitTo(creep.memory.target);
+        creep.moveTo(creep.pos.findClosestByRange(exit));
+        return;
+      }
+        //if (creep.transfer(Game.spawns.Spawn1, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
+          if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE){
+          creep.moveTo(creep.room.controller);
+        }
+      }
+      else {
+          var source = creep.pos.findClosestByPath(FIND_SOURCES_ACTIVE);
+          if (creep.harvest(source) == ERR_NOT_IN_RANGE) {
+              creep.moveTo(source);
+            }
+          }
+        }
+};
