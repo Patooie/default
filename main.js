@@ -52,7 +52,7 @@ module.exports.loop = function() {
     // Code below controls upper and lower limit of count for each type of creep
     // Set minimum & maximum numbers for each creep type
     var minimumNumberOfHarvesters = 3;
-    var maxHarvesters = 4;
+    var maxHarvesters = 6;
     var minimumNumberOfUpgraders = 4;
     var maxUpgraders = 5;
     var minimumNumberOfBuilders = 0;
@@ -216,7 +216,7 @@ module.exports.loop = function() {
 //      spawnPreLoad = false;
 //      spawnPreLoadTarget = '';
 //    } else
-    if (minimumNumberOfHarvesters > utility.howManyOfRole('harvester', HOME)) {
+    if (utility.howManyOfRole('harvester' , HOME) < minimumNumberOfHarvesters) {
       var name = Game.spawns.Spawn1.createCustomCreep(energyAvailable, 'harvester', HOME);
       console.log('Spawning harvester type creep');
     } else
