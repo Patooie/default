@@ -30,7 +30,7 @@ run: function(creep) {
     }
 
   }
-  else if (creep.memory.working == false && creep.carry.energy == creep.carryCapacity){
+  else if (creep.memory.working == false && _.sum(creep.carry) == creep.carryCapacity){
     creep.memory.working = true;
 
   }
@@ -64,6 +64,13 @@ run: function(creep) {
 
       // if we found one
       if (structure != undefined) {
+        // if structure is a STORAGE then transfer all collected
+        if (structure.structureType == STRUCTURE_STORAGE){
+          for(var resourceType in creep.carry) {
+	            creep.transfer(structure, resourceType);
+            }
+        }
+
         // try to transfer energy, if it is in range
         if (creep.transfer(structure, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE){
           // not in range...move to it
