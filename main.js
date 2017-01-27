@@ -53,15 +53,15 @@ module.exports.loop = function() {
     // Set minimum & maximum numbers for each creep type
     var minimumNumberOfHarvesters = 3;
     var maxHarvesters = 6;
-    var minimumNumberOfUpgraders = 4;
-    var maxUpgraders = 5;
+    var minimumNumberOfUpgraders = 3;
+    var maxUpgraders = 4;
     var minimumNumberOfBuilders = 0;
     var maxBuilders = 0;
-    var minimumNumberOfRepairers = 2;
-    var maxRepairers = 3;
+    var minimumNumberOfRepairers = 1;
+    var maxRepairers = 2;
     var minimumNumberOfWallRepairers = 1;
     var maxWallRepairers = 2;
-    var minimumNumberOfLongDistanceHarvesters = 6;
+    var minimumNumberOfLongDistanceHarvesters = 4;
     var maxLongDistanceHarvesters = 8 ;
     var remoteLongDistanceHarvester = 0;
     var minimumNumberOfUtilityDestroyers = 0;
@@ -209,13 +209,6 @@ module.exports.loop = function() {
     // add this to the if statement below to only try when the spawn is idle)
 
    if (Game.spawns.Spawn1.room.energyAvailable >=1200 && spawnIdle) {
-     // first check to see if the queue has been preloaded with a priority build role
-//    if (spawnPreLoad = 'harvester' || spawnPreLoad == 'upgrader' || spawnPreLoad == 'repairer' || spawnPreLoad == 'builder'){
-//      var name = Game.spawns.Spawn1.createCustomCreep(energyAvailable, spawnPreLoad, spawnPreLoadTarget);
-//      console.log('Detected dying: ' + spawnPreLoad + ' Queuing replacement for ' + spawnPreLoadTarget);
-//      spawnPreLoad = false;
-//      spawnPreLoadTarget = '';
-//    } else
     if (utility.howManyOfRole('harvester' , HOME) < minimumNumberOfHarvesters) {
       var name = Game.spawns.Spawn1.createCustomCreep(energyAvailable, 'harvester', HOME);
       console.log('Spawning harvester type creep');
@@ -244,8 +237,9 @@ module.exports.loop = function() {
          var name = Game.spawns.Spawn1.createEnergyTransporterCreep(energyAvailable, 'energyTransporter',REMOTE1);
          console.log('spawn remote energyTransporter from: '+ energyAvailable +' energy for  ' + REMOTE1);
       } else
-      if (utility.howManyOfRole('remoteLongDistanceHarvester') < remoteLongDistanceHarvester){
-         var name = Game.spawns.Spawn1.createLongDistanceHarvester(energyAvailable,'remoteLongDistanceHarvester', 4, HOME, REMOTE2,0);
+      if (utility.howManyOfRole('LongDistanceHarvester') < minimumNumberOfLongDistanceHarvesters){
+         var name = Game.spawns.Spawn1.createLongDistanceHarvester(energyAvailable,'LongDistanceHarvester', 4, HOME, REMOTE1,0);
+         console.log('Spawning longDistanceHarvester type creep targeting  ' + HOME);
       } else
       if(numberOfRoomClaimers < 1 && claimRoomTarget != ''){
         var name = Game.spawns.Spawn1.createClaimer(HOME, claimRoomTarget);
