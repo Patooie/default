@@ -238,7 +238,9 @@ module.exports.loop = function() {
          console.log('spawn remote energyTransporter from: '+ energyAvailable +' energy for  ' + REMOTE1);
       } else
       if (utility.howManyOfRole('LongDistanceHarvester') < minimumNumberOfLongDistanceHarvesters){
-         var name = Game.spawns.Spawn1.createLongDistanceHarvester(energyAvailable,'longDistanceHarvester', 4, HOME, REMOTE1,0);
+
+         var name = Game.spawns.Spawn1.createLongDistanceHarvester(energyAvailable,'LongDistanceHarvester', 4, HOME, REMOTE1,0);
+
          console.log('Spawning longDistanceHarvester type creep targeting  ' + HOME);
       } else
       if(numberOfRoomClaimers < 1 && claimRoomTarget != ''){
