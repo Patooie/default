@@ -5,7 +5,6 @@ var roleBuilder = require('role.builder');
 var roleRepairer = require('role.repairer');
 var roleWallRepairer = require('role.wallrepairer');
 var roleLongDistanceHarvester = require('role.longDistanceHarvester');
-var roleUtilityDestroyer = require('role.utilityDestroyer');
 var roleRoomClaimer = require('role.roomClaimer');
 var roleResourceCleaner = require('role.resourceCleaner');
 var defendRoom = require('defendRoom');
@@ -53,16 +52,16 @@ module.exports.loop = function() {
     // Set minimum & maximum numbers for each creep type
     var minimumNumberOfHarvesters = 3;
     var maxHarvesters = 6;
-    var minimumNumberOfUpgraders = 3;
-    var maxUpgraders = 4;
+    var minimumNumberOfUpgraders = 1;
+    var maxUpgraders = 2;
     var minimumNumberOfBuilders = 0;
-    var maxBuilders = 0;
+    var maxBuilders = 1;
     var minimumNumberOfRepairers = 1;
     var maxRepairers = 2;
     var minimumNumberOfWallRepairers = 1;
     var maxWallRepairers = 2;
     var minimumNumberOfLongDistanceHarvesters = 4;
-    var maxLongDistanceHarvesters = 8 ;
+    var maxLongDistanceHarvesters = 4 ;
     var remoteLongDistanceHarvester = 0;
     var minimumNumberOfUtilityDestroyers = 0;
     var maxUtilityDestroyers = 0;
@@ -237,7 +236,7 @@ module.exports.loop = function() {
          var name = Game.spawns.Spawn1.createEnergyTransporterCreep(energyAvailable, 'energyTransporter',REMOTE1);
          console.log('spawn remote energyTransporter from: '+ energyAvailable +' energy for  ' + REMOTE1);
       } else
-      if (utility.howManyOfRole('LongDistanceHarvester') < minimumNumberOfLongDistanceHarvesters){
+      if (utility.howManyOfRole('longDistanceHarvester') < minimumNumberOfLongDistanceHarvesters){
          var name = Game.spawns.Spawn1.createLongDistanceHarvester(energyAvailable,'longDistanceHarvester', 4, HOME, REMOTE1,0);
          console.log('Spawning longDistanceHarvester type creep targeting  ' + HOME);
       } else

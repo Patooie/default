@@ -21,6 +21,14 @@ module.exports = function() {
         sourceID: 0,
         lockTimer: 0});
     }
+
+  StructureSpawn.prototype.createWallDestroyerCreep =
+    function(energy, roleName, targetRoom){
+
+
+
+    }
+
   StructureSpawn.prototype.createEnergyTransporterCreep =
       function(energy, roleName, targetRoom){
         var numberOfParts = Math.floor(energy / 100);
