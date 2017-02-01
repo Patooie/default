@@ -11,9 +11,11 @@ var defendRoom = require('defendRoom');
 var roleBuildHere = require('role.buildHere');
 var roleRepairHere = require('role.repairHere');
 var roleEnergyTransporter = require('role.energyTransporter');
+var roleSoldier = require('role.soldier');
 var utility = require('utility.Functions');
 
 var queuedBuild = '';
+var atWar = false;
 
 var minNum = {
 
@@ -55,13 +57,13 @@ module.exports.loop = function() {
     var minimumNumberOfUpgraders = 1;
     var maxUpgraders = 2;
     var minimumNumberOfBuilders = 0;
-    var maxBuilders = 1;
+    var maxBuilders = 2;
     var minimumNumberOfRepairers = 1;
     var maxRepairers = 2;
     var minimumNumberOfWallRepairers = 1;
     var maxWallRepairers = 2;
-    var minimumNumberOfLongDistanceHarvesters = 4;
-    var maxLongDistanceHarvesters = 4 ;
+    var minimumNumberOfLongDistanceHarvesters = 2;
+    var maxLongDistanceHarvesters = 2;
     var remoteLongDistanceHarvester = 0;
     var minimumNumberOfUtilityDestroyers = 0;
     var maxUtilityDestroyers = 0;
@@ -70,6 +72,10 @@ module.exports.loop = function() {
     var minimumNumberofEnergyTransporters =1;
     var maxEnergyTransporters = 1;
     var minimumNumberOfResourceCleaners = 0;
+    var minSoldiers = 0;
+    var maxSoldiers = 0;
+    var minSquadSize = 3;
+    // minimum number of creeps you need to form an attack squad
 
     // get actual counts for each creep type
 
@@ -86,33 +92,33 @@ module.exports.loop = function() {
     var numberOfRemoteBuilders = utility.howManyOfRole('remoteBuilders');
     var numberOfRemoteRepairers = utility.howManyOfRole('remoteRepairers');
     var numberOfEnergyTransporters = utility.howManyOfRole('energyTransporter');
-
+    var numberOfSoldiers = utility.howManyOfRole('soldier');
 
     var energy = Game.spawns.Spawn1.room.energyCapacityAvailable;
     var energyAvailable = Game.spawns.Spawn1.room.energyAvailable;
     //console.log('Main: Energy: '+ energyAvailable +'('+energy+')');
     var energyStored = 0;
-/*
-    var structure = Game.room.find(FIND_STRUCTURES, {
-      filter: (s) => (s.structureType == STRUCTURE_STORAGE
-                  ||  s.structureType == STRUCTURE_CONTAINER)
-                  &&  _.sum(s.store) < s.storeCapacity
-      });
 
-    if (structure != undefined){
-      for (i = 0; i > structures.length; i++){
-        energyStored = energyStored + structures[i].store[RESOURCE_ENERGY];
-      }
-    }
-*/
+// Check the flags setting to see what state we are in War/Massing/patrolling
+  var breachTarget = Game.flags.breach;
+  var assaultTarget = Game.flags.assault;
+  var holdTarget = Game.flags.hold;
+// Troubleshooting console logger below to determine if flags are being detected
+
+// If flags are set then activate atWar flag which enables soldier spawing
+if (breachTarget != undefined || assaultTarget!= undefined || holdTarget != undefined) atWar = true;
+if (breachTarget == undefined && assaultTarget == undefined && holdTarget == undefined) atWar = false;
+//console.log('War flag set to: ' + atWar);
 
 // spawn is idle....if energy is full look for the next expiring creep
 // to pre-cache in the queue
   if (Game.spawns.Spawn1.spawning == undefined){
     spawnIdle = true;
   }
-// every 10 ticks do the following actions
-  if ((Game.time/10) == (Math.floor(Game.time/10))){
+
+
+// every 20 ticks do the following actions
+  if ((Game.time/20) == (Math.floor(Game.time/20))){
     console.log('Energy: '+ energyAvailable +'/'+energy);
     if (Game.spawns.Spawn1.spawning == undefined) console.log('Spawn idle...');
     //If (energyStored > 0) console.log ('Stored Energy: ' + energyStored);
@@ -127,9 +133,12 @@ module.exports.loop = function() {
       " LDHarv: "+ utility.howManyOfRole('longDistanceHarvester') + "(" + minimumNumberOfLongDistanceHarvesters + ")"+
       " RmtHarv: "+ utility.howManyOfRole('remoteLongDistanceHarvester') + "("+ remoteLongDistanceHarvester +")"+
       " RsrcClean: "+ utility.howManyOfRole('resourceCleaner', controlledRooms[dd]) + "(1)"+
-      " Dstryr: "+ utility.howManyOfRole('utilityDestroyer', controlledRooms[dd]) + "(" + minimumNumberOfUtilityDestroyers + ")" );
+      " Soldier "+ utility.howManyOfRole('soldier', controlledRooms[dd]) + "(" + minSoldiers + ")" );
     }
   }
+
+
+
   // main loop for link transfers
   var linkFrom = Game.spawns.Spawn1.room.lookForAt('structure', 26,47)[0];
   var linkTo = Game.spawns.Spawn1.room.lookForAt('structure',26,29)[0];
@@ -155,6 +164,9 @@ module.exports.loop = function() {
         } else if (creep.memory.role == 'upgrader') {
             // role is upgrader so go harvest energy and use to upgrade controller
             roleUpgrader.run(creep);
+        } else if(creep.memory.role == 'soldier') {
+          // role is soldier...build those creeps and go destroy stuff
+            roleSoldier.run(creep);
         } else if (creep.memory.role == 'builder') {
             roleBuilder.run(creep);
         } else if (creep.memory.role == 'repairer') {
@@ -206,8 +218,14 @@ module.exports.loop = function() {
     defendRoom('W89N53');
     // temporary code to build remote workers for new room but only if energy is maxed out
     // add this to the if statement below to only try when the spawn is idle)
+    //console.log('Time to spawn: ' + Game.spawns.Spawn1.spawning.remainingTime);
+    //console.log('Soldiers: ' + utility.howManyOfRole('soldier') + ' - minSoldiers: ' + minSoldiers + ' Spawn Active: ' + Game.spawns.Spawn1.spawning);
 
-   if (Game.spawns.Spawn1.room.energyAvailable >=1200 && spawnIdle) {
+   if (Game.spawns.Spawn1.room.energyAvailable >=1200 && !Game.spawns.Spawn1.spawning) {
+     if (utility.howManyOfRole('soldier') < minSoldiers && atWar == true) {
+       var name = Game.spawns.Spawn1.createSoldierCreep(energyAvailable,'soldier', HOME);
+       console.log('Spawning Soldier....GIT SUM!! Result: ' + name);
+     } else
     if (utility.howManyOfRole('harvester' , HOME) < minimumNumberOfHarvesters) {
       var name = Game.spawns.Spawn1.createCustomCreep(energyAvailable, 'harvester', HOME);
       console.log('Spawning harvester type creep');
@@ -219,6 +237,17 @@ module.exports.loop = function() {
        if (utility.howManyOfRole('upgrader', HOME) < maxUpgraders) {
        var name = Game.spawns.Spawn1.createCustomCreep(energyAvailable, 'upgrader', HOME);
              console.log('Spawning upgrader type creep');
+    } else
+    // code to create soldiers
+      if (utility.howManyOfRole('soldier') < minSoldiers && Game.spawns.Spawn1.spawning == false) {
+      Game.spawns.Spawn1.createCreep([TOUGH, MOVE, MOVE, MOVE, ATTACK, ATTACK], undefined, { role: 'soldier',
+        working: false,
+        idleCount: 0,
+        lockTarget: '',
+        targetRoom: 'W88N54',
+        sourceID: 0,
+        lockTimer: 0});
+      console.log('Spawning Soldier....GIT SM!!');
     } else
     if (utility.howManyOfRole('builder',REMOTE1) < 1 && numberOfBuilders < maxBuilders && numberOfBuilders >= minimumNumberOfBuilders ){
        var name = Game.spawns.Spawn1.createCustomCreep(energyAvailable, 'builder','W89N53');

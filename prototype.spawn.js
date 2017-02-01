@@ -22,6 +22,37 @@ module.exports = function() {
         lockTimer: 0});
     }
 
+    StructureSpawn.prototype.createSoldierCreep =
+      function(energy, roleName, targetRoom){
+
+        return this.createCreep([TOUGH, MOVE, MOVE, MOVE, ATTACK, ATTACK],
+          undefined, { role: roleName,
+          working: false,
+          idleCount: 0,
+          lockTarget: '',
+          targetRoom: targetRoom,
+          mission: '',
+          leader: '',
+          squadId: 0,
+          sourceID: 0,
+          lockTimer: 0});
+      }
+
+  StructureSpawn.prototype.createSniperCreep =
+    function(energy, roleName, targetRoom){
+      return this.createCreep([TOUGH, MOVE, MOVE, MOVE, RANGED_ATTACK, RANGED_ATTACK],
+        undefined, { role: roleName,
+        working: false,
+        idleCount: 0,
+        lockTarget: '',
+        targetRoom: targetRoom,
+        mission: '',
+        leader: '',
+        squadId: 0,
+        sourceID: 0,
+        lockTimer: 0});
+    }
+
   StructureSpawn.prototype.createWallDestroyerCreep =
     function(energy, roleName, targetRoom){
 
