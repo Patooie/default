@@ -230,7 +230,7 @@ module.exports.loop = function() {
        console.log('spawn remote repairer from: '+ energyAvailable +' energy for  ' + REMOTE1);
      } else
      if (numberOfHarvesters < maxHarvesters && numberOfHarvesters >= minimumNumberOfHarvesters ){
-        var name = Game.spawns.Spawn1.createCustomCreep(energyAvailable, 'harvester',REMOTE1);
+        var name = Game.spawns.Spawn1.createCustomCreep(energyAvailable, 'harvester', REMOTE1);
         console.log('spawn remote harvester from: '+ energyAvailable +' energy for  ' + REMOTE1);
       } else
       if (utility.howManyOfRole('energyTransporter',REMOTE1)<1 && numberOfEnergyTransporters < maxEnergyTransporters && numberOfEnergyTransporters >= minimumNumberofEnergyTransporters ){
@@ -238,7 +238,9 @@ module.exports.loop = function() {
          console.log('spawn remote energyTransporter from: '+ energyAvailable +' energy for  ' + REMOTE1);
       } else
       if (utility.howManyOfRole('LongDistanceHarvester') < minimumNumberOfLongDistanceHarvesters){
+
          var name = Game.spawns.Spawn1.createLongDistanceHarvester(energyAvailable,'LongDistanceHarvester', 4, HOME, REMOTE1,0);
+
          console.log('Spawning longDistanceHarvester type creep targeting  ' + HOME);
       } else
       if(numberOfRoomClaimers < 1 && claimRoomTarget != ''){
